@@ -20,7 +20,7 @@ public class AppManager {
     public static final ImageIcon emptyIcon = new ImageIcon(emptyImage);
     public static String boardName = "wood4.jpg";
     public static String piecesName = "alpha/";
-    public static double piecesScalingFactor = (double) 1 /25.6;
+    public static double piecesScalingFactor = 1;
     public static BufferedImage boardImage;
 
     static {

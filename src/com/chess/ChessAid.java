@@ -13,8 +13,8 @@ import java.util.Scanner;
 
 public class ChessAid {
     public static void main(String[] args) {
-        //SwingUtilities.invokeLater(Window::new);
-        consoleMode();
+        SwingUtilities.invokeLater(Window::new);
+        //consoleMode();
     }
 
     public static void consoleMode(){
