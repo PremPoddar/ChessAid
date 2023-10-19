@@ -42,6 +42,7 @@ public class Board {
         positionHashes = new ArrayList<>();
         positionHashes.add(calculateBoardHash());
     }
+
     public void initializeTiles(){//Use it to create an empty board
         for(int i = 0; i < 64; i++){
             final Tile tile = new Tile(i, null, PieceUtils.NONE);
@@ -81,6 +82,7 @@ public class Board {
                 final int sourceTileCoordinate = sourceTile.getTileCoordinate();
                 final int destinationTileCoordinate = destinationTile.getTileCoordinate();
                 tiles.get(sourceTileCoordinate).setNullPieceOnTile();
+                sourceTilePiece.setPiecePosition(destinationTileCoordinate);
                 tiles.get(destinationTileCoordinate).setPieceOnTile(sourceTilePiece);
                 tiles.get(destinationTileCoordinate).getPieceOnTile().setToNotFirstMove();
                 if(sourceTilePiece.isKing()){
@@ -162,7 +164,7 @@ public class Board {
         gameOver("Draw");
     }
 
-    private void updateFiftyMoveCounter(final Move move){
+    private void updateFiftyMoveCounter(final Move move) {
         if(tiles.get(move.getSourceTileCoordinate()).tileIsOccupied()) {
             if (!tiles.get(move.getSourceTileCoordinate()).getPieceOnTile().isPawn()) {
                 if (tiles.get(move.getDestinationTileCoordinate()).getPieceOnTile().isNull()) {
@@ -183,6 +185,20 @@ public class Board {
         if(Objects.equals(conclusion, "Draw")){
             gameIsOn = false;
             System.exit(0);
+        }
+    }
+    private void printCurrentPlayersLegalMove(){
+        for (Tile tile : tiles) {
+            if (tile.tileIsOccupied()) {
+                if (tile.getPieceOnTile().getAlliance() == currentPlayer.getAlliance()) {
+                    Piece pieceOnTile = tile.getPieceOnTile();
+                    System.out.println(currentPlayer.getAlliance() + " " + pieceOnTile + " on " + BoardUtils.getPositionAtCoordinate(pieceOnTile.getPiecePosition()) + ": ");
+                    for (Move move : pieceOnTile.calculateLegalMoves(tiles)) {
+                        System.out.println(move);
+                    }
+                    System.out.println("-----------------------------");
+                }
+            }
         }
     }
     public Player getCurrentPlayer(){return currentPlayer;}

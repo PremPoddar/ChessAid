@@ -25,10 +25,7 @@ public class BoardUtils {
     public static final boolean[] FIRST_RANK = initializeRow(1);
 
     private static final String[] CHESS_NOTATION = initializeCHESSNotation();
-
     private static final Map<String, Integer> POSITION_TO_COORDINATE = initializePosotionToCoordinateMap();
-
-
     private static boolean[] initializeRow(int rowNumber) {
         rowNumber = (8 - rowNumber) * 8;
         final boolean[] row = new boolean[NUM_TILES];
@@ -186,6 +183,38 @@ public class BoardUtils {
         }
         return tiles;
     }
+    public static String generateFenFromTiles(List<Tile> tiles) {
+        StringBuilder fenBuilder = new StringBuilder();
+        int emptySquareCount = 0;
+
+        for (int i = 63; i >= 0; i--) {
+            Tile tile = tiles.get(i);
+            if (tile.tileIsOccupied()) {
+                if (emptySquareCount > 0) {
+                    fenBuilder.append(emptySquareCount);
+                    emptySquareCount = 0;
+                }
+                fenBuilder.append(tile.getPieceOnTile());
+            } else {
+                emptySquareCount++;
+            }
+
+            if (i % 8 == 0) {
+                if (emptySquareCount > 0) {
+                    fenBuilder.append(emptySquareCount);
+                    emptySquareCount = 0;
+                }
+                if (i != 0) {
+                    fenBuilder.append("/");
+                }
+            }
+        }
+
+        // Add additional FEN components (castling, en passant, etc.) here if needed
+        fenBuilder.append(" w KQkq - 0 1");
+        return fenBuilder.toString();
+    }
+
     public static boolean isValidTileCoordinate(final int coordinate) {
         return coordinate >= 0 && coordinate < 64;
     }
@@ -210,6 +239,10 @@ public class BoardUtils {
         }
 
         return numberOfPlies;
+    }
+
+    public static boolean isValidFen(final String fen){
+        return true;
     }
 
 }

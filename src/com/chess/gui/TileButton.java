@@ -29,6 +29,5 @@ public class TileButton extends JButton {
 
         ImageIcon icon = new ImageIcon(combinedImage);
         this.setIcon(icon);
-        //this.setText("hello");
     }
 }

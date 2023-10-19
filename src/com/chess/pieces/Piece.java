@@ -42,7 +42,20 @@ public abstract class Piece {
     public boolean isPawn(){return false;}
     public boolean isKing(){return false;}
     public boolean isNull(){return this.pieceId == PieceUtils.NONE;}
+    public void setToNotFirstMove(){isFirstMove = false;}
+    public PieceType getPieceType(){return this.pieceType;}
+    public void setPiecePosition(final int piecePosition){this.piecePosition = piecePosition;}
+    public ImageIcon getIcon(){
+        Image scaledImage;
+        try {
+            BufferedImage pieceImage = ImageIO.read(new File(AppManager.PIECES+AppManager.piecesName+alliance.allianceLetter()+pieceType.pieceName+".png"));
+            scaledImage = pieceImage.getScaledInstance((int)(pieceImage.getWidth()*AppManager.piecesScalingFactor), (int)(pieceImage.getHeight()*AppManager.piecesScalingFactor), Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        return new ImageIcon(scaledImage);
+    }
     public abstract String toString();
 
     public enum PieceType {
@@ -108,16 +121,5 @@ public abstract class Piece {
             };
         }
     }
-    public void setToNotFirstMove(){isFirstMove = false;}
-    public ImageIcon getIcon(){
-        Image scaledImage;
-        try {
-            BufferedImage pieceImage = ImageIO.read(new File(AppManager.PIECES+AppManager.piecesName+alliance.allianceLetter()+pieceType.pieceName+".png"));
-            scaledImage = pieceImage.getScaledInstance((int)(pieceImage.getWidth()*AppManager.piecesScalingFactor), (int)(pieceImage.getHeight()*AppManager.piecesScalingFactor), Image.SCALE_SMOOTH);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        return new ImageIcon(scaledImage);
-    }
 }

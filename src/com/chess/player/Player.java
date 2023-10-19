@@ -3,6 +3,7 @@
 package com.chess.player;
 
 import com.chess.Alliance;
+import com.chess.board.Board;
 import com.chess.board.BoardUtils;
 import com.chess.board.Tile;
 import com.chess.moves.Move;
@@ -28,16 +29,17 @@ public class Player {
         for(Tile tile : board){
             if(tile.getPieceOnTile() != null){
                 pieceOnTile = tile.getPieceOnTile();
-                if(pieceOnTile.getAlliance() == alliance){
-                    legalMoves.addAll(pieceOnTile.calculateLegalMoves(board));
-                    System.out.println(this.alliance+" "+pieceOnTile+" on "+ BoardUtils.getPositionAtCoordinate(tile.getTileCoordinate())+": ");
-                    for(Move move : pieceOnTile.calculateLegalMoves(board)){
-                        System.out.println(move);
-                    }
-                }
+//                System.out.println(this.alliance + " " + pieceOnTile + " on " + BoardUtils.getPositionAtCoordinate(tile.getTileCoordinate()) + ": ");
+//                for(Move move : pieceOnTile.calculateLegalMoves(board)){
+//                    if (pieceOnTile.getPieceType() == Piece.PieceType.BISHOP){
+//                        System.out.println(move);
+//                    }
+//                }
+                legalMoves.addAll(pieceOnTile.calculateLegalMoves(board));
+
             }
         }
-        System.out.println("-------------------------------------");
+        //System.out.println("--------------------------");
         return legalMoves;
     }
 

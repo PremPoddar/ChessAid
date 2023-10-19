@@ -14,12 +14,11 @@ import java.awt.event.WindowEvent;
 
 public class Window extends JFrame {
 
-    private StringBuilder positionInFen;
-    private JPanel panel;
-    private JLabel allianceLabel;
-    private JButton moveButton;
-    private JTextField moveTextField;
-    private ChessBoardPanel chessBoardPanel;
+    private final StringBuilder positionInFen;
+    private final JPanel panel;
+    private static JLabel allianceLabel;
+    private final JTextField moveTextField;
+    private final ChessBoardPanel chessBoardPanel;
 
     public Window() {
         positionInFen = new StringBuilder();
@@ -27,19 +26,7 @@ public class Window extends JFrame {
         allianceLabel = new JLabel();
         chessBoardPanel = new ChessBoardPanel();
         panel = new JPanel(new BorderLayout());
-        moveButton = new JButton("Make Move");
-
-        moveButton.addActionListener(e -> {
-            final Move move = new Move(BoardUtils.getCoordinateAtPosition(moveTextField.getText().substring(0, 2)), BoardUtils.getCoordinateAtPosition(moveTextField.getText().substring(2, 4)));
-            if (chessBoardPanel.board.getCurrentPlayer().getAlliance() == Alliance.WHITE) {
-                allianceLabel.setText("Black");
-            }else {
-                allianceLabel.setText("White");
-            }
-            chessBoardPanel.makeMove(move);
-            moveTextField.setText("");
-
-        });
+        JButton moveButton = getjButton();
 
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.add(allianceLabel, BorderLayout.WEST);
@@ -67,5 +54,22 @@ public class Window extends JFrame {
                 Window.this.setVisible(true);
             }
         });
+    }
+
+    private JButton getjButton() {
+        JButton moveButton = new JButton("Make Move");
+
+        moveButton.addActionListener(e -> {
+            final Move move = new Move(BoardUtils.getCoordinateAtPosition(moveTextField.getText().substring(0, 2)), BoardUtils.getCoordinateAtPosition(moveTextField.getText().substring(2, 4)));
+            chessBoardPanel.makeMove(move);
+            allianceLabel.setText(chessBoardPanel.board.getCurrentPlayer().getAlliance().toString());
+            moveTextField.setText("");
+
+        });
+        return moveButton;
+    }
+
+    public static void updateAllianceLabel(final String alliance){
+        allianceLabel.setText(alliance);
     }
 }

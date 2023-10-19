@@ -4,8 +4,6 @@ import com.app.AppManager;
 import com.chess.board.Board;
 import com.chess.board.BoardUtils;
 import com.chess.moves.Move;
-import com.chess.pieces.Piece;
-import com.chess.pieces.Rook;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -51,6 +49,7 @@ public class ChessBoardPanel extends JPanel {
                 partialMove += BoardUtils.getPositionAtCoordinate(finalI);
                 if(partialMove.length() == 4){
                     makeMove(new Move(BoardUtils.getCoordinateAtPosition(partialMove.substring(0, 2)), BoardUtils.getCoordinateAtPosition(partialMove.substring(2, 4))));
+                    Window.updateAllianceLabel(board.getCurrentPlayer().getAlliance().toString());
                     partialMove = "";
                 }
             });

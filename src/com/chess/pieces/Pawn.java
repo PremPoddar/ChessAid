@@ -68,7 +68,7 @@ public class Pawn extends Piece{
                         System.out.println("Occupied");
                         final Piece pieceOnCandidate = board.get(candidateDestinationCoordinate).getPieceOnTile();
                         if (this.getAlliance() != pieceOnCandidate.getAlliance()) {
-                            System.out.println("!Alliance");
+                            System.out.println("Alliance");
                             if(this.getAlliance().isPawnPromotionSquare(candidateDestinationCoordinate)){
                                 legalMoves.add(new Move(piecePosition, candidateDestinationCoordinate));
                                 //TODO: handle promotion properly from the Board class
