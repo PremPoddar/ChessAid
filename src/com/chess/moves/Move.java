@@ -23,12 +23,7 @@ public class Move {
 
     public boolean isEnPassant(){
         //This is a dirty way to check and relies on the fact that you checked that the move is a pawn move before checking if it is an EnPasant Move
-        for(int i = -56; i <= 56; i+=8){
-             if(sourceTileCoordinate+i == destinationTileCoordinate){
-                 return false;
-             }
-        }
-        return true;
+        return sourceTileCoordinate+16 == destinationTileCoordinate || sourceTileCoordinate-16 == destinationTileCoordinate;
     }
 
     @Override

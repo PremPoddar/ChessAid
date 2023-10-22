@@ -30,7 +30,9 @@ public class ChessBoardPanel extends JPanel {
         if(moveVal/10000 >= 1){
             tiles[move.getSourceTileCoordinate()].setOverlayIcon(AppManager.emptyIcon);
             tiles[move.getDestinationTileCoordinate()].setOverlayIcon(board.tiles.get(move.getDestinationTileCoordinate()).getPieceOnTile().getIcon());
-            if(moveVal/10000 >= 2){
+            if(moveVal/100000 > 1){
+                tiles[moveVal/100000].setOverlayIcon(AppManager.emptyIcon);
+            }else if(moveVal/10000 >= 2){
                 tiles[moveVal%100].setOverlayIcon(AppManager.emptyIcon);
                 tiles[(moveVal%10000)/100].setOverlayIcon(board.tiles.get((moveVal%10000)/100).getPieceOnTile().getIcon());
             }

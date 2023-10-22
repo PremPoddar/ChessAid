@@ -79,6 +79,13 @@ public class Board {
             final Tile destinationTile = tiles.get(move.getDestinationTileCoordinate());
             final boolean destinationPieceIsNull = destinationTile.getPieceOnTile() == null;
             if (destinationPieceIsNull || (destinationTile.getPieceOnTile().getAlliance() != null && currentPlayer.getAlliance() != destinationTile.getPieceOnTile().getAlliance())) {//Checking if the source tile and destination tile have different alliances
+                final boolean enPassantPawnIsNull = enPassantPawn == null;
+                if(!enPassantPawnIsNull && enPassantPawn.getAlliance() == currentPlayer.getAlliance()){
+                    enPassantPawn = null;
+                }
+                if(sourceTilePiece.isPawn() && move.isEnPassant()){
+                    enPassantPawn = (Pawn) sourceTilePiece;
+                }
                 final int sourceTileCoordinate = sourceTile.getTileCoordinate();
                 final int destinationTileCoordinate = destinationTile.getTileCoordinate();
                 tiles.get(sourceTileCoordinate).setNullPieceOnTile();
@@ -98,6 +105,13 @@ public class Board {
                         tiles.get(destinationTileCoordinate+1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate+1));
                         returnVal += 100*(destinationTileCoordinate+1);
                         tiles.get(destinationTileCoordinate+1).getPieceOnTile().setToNotFirstMove();
+                    }
+                }
+                if(sourceTilePiece.isPawn()){
+                    if(sourceTileCoordinate+7*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate || sourceTileCoordinate+9*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate){
+                        int capturedPawnCoordinate = destinationTileCoordinate-8*currentPlayer.getAlliance().getDirection();
+                        tiles.get(capturedPawnCoordinate).setNullPieceOnTile();
+                        returnVal += 100000*capturedPawnCoordinate;
                     }
                 }
                 updateFiftyMoveCounter(move);

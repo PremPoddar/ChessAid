@@ -1,9 +1,8 @@
 package com.chess.gui;
 
 
-import com.app.AppManager;
+
 import com.chess.Alliance;
-import com.chess.board.Board;
 import com.chess.board.BoardUtils;
 import com.chess.moves.Move;
 

@@ -3,8 +3,6 @@
 package com.chess.player;
 
 import com.chess.Alliance;
-import com.chess.board.Board;
-import com.chess.board.BoardUtils;
 import com.chess.board.Tile;
 import com.chess.moves.Move;
 import com.chess.pieces.Piece;

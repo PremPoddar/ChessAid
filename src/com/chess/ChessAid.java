@@ -30,7 +30,7 @@ public class ChessAid {
             System.out.println("The fen you entered is incorrect.");
             System.exit(0);
         }
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        Board board = new Board(boardFen);
 
         while (board.isGameIsOn()){
             System.out.println(board);
