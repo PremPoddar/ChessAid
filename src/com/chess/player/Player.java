@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class Player {
-    private final Alliance alliance;
+    private Alliance alliance;
     boolean kingIsCastled;
     public Player(final Alliance alliance) {
         this.alliance = alliance;
@@ -21,23 +21,18 @@ public class Player {
     public Alliance getAlliance() {
         return alliance;
     }
+    public void setAlliance(final Alliance alliance){this.alliance = alliance;}
     public Collection<Move>getAllLegalMoves(final List<Tile> board){
         Piece pieceOnTile;
         Collection<Move> legalMoves = new ArrayList<>();
         for(Tile tile : board){
             if(tile.getPieceOnTile() != null){
                 pieceOnTile = tile.getPieceOnTile();
-//                System.out.println(this.alliance + " " + pieceOnTile + " on " + BoardUtils.getPositionAtCoordinate(tile.getTileCoordinate()) + ": ");
-//                for(Move move : pieceOnTile.calculateLegalMoves(board)){
-//                    if (pieceOnTile.getPieceType() == Piece.PieceType.BISHOP){
-//                        System.out.println(move);
-//                    }
-//                }
-                legalMoves.addAll(pieceOnTile.calculateLegalMoves(board));
-
+                if(pieceOnTile.getAlliance() == alliance) {
+                    legalMoves.addAll(pieceOnTile.calculateLegalMoves(board));
+                }
             }
         }
-        //System.out.println("--------------------------");
         return legalMoves;
     }
 

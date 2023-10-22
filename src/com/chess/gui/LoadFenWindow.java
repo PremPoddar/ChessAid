@@ -8,10 +8,10 @@ import java.awt.event.WindowEvent;
 public class LoadFenWindow extends JDialog {
     private final String STARTING_CHESS_POSITION_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     private final JTextField fenTextField;
-    private final JButton loadFenButton;
+
     LoadFenWindow(StringBuilder positionInFen){
         fenTextField = new JTextField(90);
-        loadFenButton = new JButton("Load fen");
+        JButton loadFenButton = new JButton("Load fen");
         JButton defaultFenButton = new JButton("Use default fen");
         JPanel fenPanel = new JPanel(new BorderLayout());
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -54,5 +54,4 @@ public class LoadFenWindow extends JDialog {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
-
 }

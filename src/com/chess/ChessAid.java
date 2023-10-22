@@ -22,7 +22,7 @@ public class ChessAid {
         String defaultBoardFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         String boardFen;
 
-        System.out.println("Type d for the normal chess setup or enter in your own fen: ");
+        System.out.print("Type d for the normal chess setup or enter in your own fen: ");
         boardFen = scanner.nextLine();
         if(boardFen.equals("d") || boardFen.equals("D")){
             boardFen = defaultBoardFen;

@@ -4,6 +4,7 @@ package com.chess.board;
 
 import com.chess.Alliance;
 import com.chess.moves.Move;
+import com.chess.moves.MoveInfo;
 import com.chess.pieces.*;
 import com.chess.player.Player;
 import java.util.*;
@@ -68,11 +69,12 @@ public class Board {
         return board.toString();
     }
 
-    public int makeMove(final Move move){
-        int returnVal = 0;
+    public MoveInfo makeMove(final Move move){
+        MoveInfo moveInfo = new MoveInfo(move);
         Collection<Move> legalMoves = currentPlayer.getAllLegalMoves(tiles);
 
         if(legalMoves.contains(move)){
+            moveInfo.setToValidMove();
             tiles.get(move.getSourceTileCoordinate()).getPieceOnTile().setToNotFirstMove();
             final Tile sourceTile = tiles.get(move.getSourceTileCoordinate());
             final Piece sourceTilePiece = sourceTile.getPieceOnTile();
@@ -94,16 +96,18 @@ public class Board {
                 tiles.get(destinationTileCoordinate).getPieceOnTile().setToNotFirstMove();
                 if(sourceTilePiece.isKing()){
                     if(move.getSourceTileCoordinate()+2 == move.getDestinationTileCoordinate()){
+                        moveInfo.setToCastleMove();
                         tiles.get(destinationTileCoordinate+1).setNullPieceOnTile();
-                        returnVal += 10000+destinationTileCoordinate+1;
+                        moveInfo.castlingRookSourceCoordinate = destinationTileCoordinate+1;
                         tiles.get(destinationTileCoordinate-1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate-1));
-                        returnVal += 100*(destinationTileCoordinate-1);
+                        moveInfo.castlingRookDestinationCoordinate = destinationTileCoordinate-1;
                         tiles.get(destinationTileCoordinate-1).getPieceOnTile().setToNotFirstMove();
                     }else if(move.getSourceTileCoordinate()-2 == move.getDestinationTileCoordinate()){
+                        moveInfo.setToCastleMove();
                         tiles.get(destinationTileCoordinate-2).setNullPieceOnTile();
-                        returnVal += 10000+destinationTileCoordinate-2;
+                        moveInfo.castlingRookSourceCoordinate = destinationTileCoordinate-2;
                         tiles.get(destinationTileCoordinate+1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate+1));
-                        returnVal += 100*(destinationTileCoordinate+1);
+                        moveInfo.castlingRookDestinationCoordinate = destinationTileCoordinate+1;
                         tiles.get(destinationTileCoordinate+1).getPieceOnTile().setToNotFirstMove();
                     }
                 }
@@ -111,7 +115,8 @@ public class Board {
                     if(sourceTileCoordinate+7*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate || sourceTileCoordinate+9*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate){
                         int capturedPawnCoordinate = destinationTileCoordinate-8*currentPlayer.getAlliance().getDirection();
                         tiles.get(capturedPawnCoordinate).setNullPieceOnTile();
-                        returnVal += 100000*capturedPawnCoordinate;
+                        moveInfo.setToEnPassantMove();
+                        moveInfo.enPassantMoveCoordinate = capturedPawnCoordinate;
                     }
                 }
                 updateFiftyMoveCounter(move);
@@ -119,11 +124,10 @@ public class Board {
                 checkForThreeFoldRepetition();
                 switchPlayer();
                 calculateAttackedSquares();
-                returnVal += 10000;
             }
 
         }
-        return returnVal;
+        return moveInfo;
     }
     private void switchPlayer(){
         if(currentPlayer == whitePlayer){

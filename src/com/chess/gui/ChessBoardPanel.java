@@ -1,9 +1,12 @@
 package com.chess.gui;
 
 import com.app.AppManager;
+import com.chess.Alliance;
 import com.chess.board.Board;
 import com.chess.board.BoardUtils;
 import com.chess.moves.Move;
+import com.chess.moves.MoveInfo;
+import com.chess.player.Player;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -26,18 +29,17 @@ public class ChessBoardPanel extends JPanel {
         this.setVisible(true);
     }
     public void makeMove(final Move move){
-        int moveVal = board.makeMove(move);
-        if(moveVal/10000 >= 1){
-            tiles[move.getSourceTileCoordinate()].setOverlayIcon(AppManager.emptyIcon);
-            tiles[move.getDestinationTileCoordinate()].setOverlayIcon(board.tiles.get(move.getDestinationTileCoordinate()).getPieceOnTile().getIcon());
-            if(moveVal/100000 > 1){
-                tiles[moveVal/100000].setOverlayIcon(AppManager.emptyIcon);
-            }else if(moveVal/10000 >= 2){
-                tiles[moveVal%100].setOverlayIcon(AppManager.emptyIcon);
-                tiles[(moveVal%10000)/100].setOverlayIcon(board.tiles.get((moveVal%10000)/100).getPieceOnTile().getIcon());
+        MoveInfo moveInfo = board.makeMove(move);
+        if (moveInfo.isValidMove) {
+            tiles[moveInfo.sourceCoordinate].setOverlayIcon(AppManager.emptyIcon);
+            tiles[moveInfo.destinationCoordinate].setOverlayIcon(board.tiles.get(moveInfo.destinationCoordinate).getPieceOnTile().getIcon());
+            if (moveInfo.isEnPassantMove) {
+                tiles[moveInfo.enPassantMoveCoordinate].setOverlayIcon(AppManager.emptyIcon);
+            }else if (moveInfo.isCastleMove) {
+                tiles[moveInfo.castlingRookSourceCoordinate].setOverlayIcon(AppManager.emptyIcon);
+                tiles[moveInfo.castlingRookDestinationCoordinate].setOverlayIcon(board.tiles.get(moveInfo.castlingRookDestinationCoordinate).getPieceOnTile().getIcon());
             }
         }
-
     }
     private void initializeTiles(){
 
