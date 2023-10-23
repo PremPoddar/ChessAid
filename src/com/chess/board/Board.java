@@ -4,10 +4,11 @@ package com.chess.board;
 
 import com.chess.Alliance;
 import com.chess.moves.Move;
-import com.chess.moves.MoveInfo;
 import com.chess.pieces.*;
 import com.chess.player.Player;
 import java.util.*;
+
+import static com.chess.board.BoardUtils.isValidFen;
 
 public class Board {
     private final Player whitePlayer;
@@ -22,7 +23,11 @@ public class Board {
     List<Integer> positionHashes;
     public static Pawn enPassantPawn;
 
-    public Board(String fen) {
+    public Board(final String fen) {
+        if(!isValidFen(fen)){
+            //TODO: handle incorrect fen properly.
+            throw new RuntimeException();
+        }
         gameIsOn = true;
         String[] fenData = fen.split(" ");
 
@@ -45,19 +50,18 @@ public class Board {
     }
 
     public void initializeTiles(){//Use it to create an empty board
-        for(int i = 0; i < 64; i++){
+        for(int i = 0; i < BoardUtils.NUM_TILES; i++){
             final Tile tile = new Tile(i, null, PieceUtils.NONE);
             tiles.add(tile);
         }
     }
-
     @Override
     public String toString() {
         StringBuilder board = new StringBuilder();
-        for (int row = 7; row >= 0; row--) {
+        for (int row = BoardUtils.NUM_TILES_PER_ROW-1; row >= 0; row--) {
             board.append("+---+---+---+---+---+---+---+---+\n");
-            for (int col = 0; col < 8; col++) {
-                int tileIndex = row * 8 + col;
+            for (int col = 0; col < BoardUtils.NUM_TILES_PER_ROW; col++) {
+                int tileIndex = row * BoardUtils.NUM_TILES_PER_ROW + col;
                 board.append("| ").append(tiles.get(tileIndex).toString()).append(" ");
             }
             board.append("| ").append(row + 1); // Append the rank number on the right
@@ -68,13 +72,11 @@ public class Board {
 
         return board.toString();
     }
-
-    public MoveInfo makeMove(final Move move){
-        MoveInfo moveInfo = new MoveInfo(move);
+    public void makeMove(final Move move){
         Collection<Move> legalMoves = currentPlayer.getAllLegalMoves(tiles);
 
         if(legalMoves.contains(move)){
-            moveInfo.setToValidMove();
+            move.setToValidMove();
             tiles.get(move.getSourceTileCoordinate()).getPieceOnTile().setToNotFirstMove();
             final Tile sourceTile = tiles.get(move.getSourceTileCoordinate());
             final Piece sourceTilePiece = sourceTile.getPieceOnTile();
@@ -85,7 +87,7 @@ public class Board {
                 if(!enPassantPawnIsNull && enPassantPawn.getAlliance() == currentPlayer.getAlliance()){
                     enPassantPawn = null;
                 }
-                if(sourceTilePiece.isPawn() && move.isEnPassant()){
+                if(sourceTilePiece.isPawn() && move.isEnPassantPawn()){
                     enPassantPawn = (Pawn) sourceTilePiece;
                 }
                 final int sourceTileCoordinate = sourceTile.getTileCoordinate();
@@ -96,27 +98,27 @@ public class Board {
                 tiles.get(destinationTileCoordinate).getPieceOnTile().setToNotFirstMove();
                 if(sourceTilePiece.isKing()){
                     if(move.getSourceTileCoordinate()+2 == move.getDestinationTileCoordinate()){
-                        moveInfo.setToCastleMove();
+                        move.setToCastleMove();
                         tiles.get(destinationTileCoordinate+1).setNullPieceOnTile();
-                        moveInfo.castlingRookSourceCoordinate = destinationTileCoordinate+1;
+                        move.setCastlingRookSourceCoordinate(destinationTileCoordinate+1);
                         tiles.get(destinationTileCoordinate-1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate-1));
-                        moveInfo.castlingRookDestinationCoordinate = destinationTileCoordinate-1;
+                        move.setCastlingRookDestinationCoordinate(destinationTileCoordinate-1);
                         tiles.get(destinationTileCoordinate-1).getPieceOnTile().setToNotFirstMove();
                     }else if(move.getSourceTileCoordinate()-2 == move.getDestinationTileCoordinate()){
-                        moveInfo.setToCastleMove();
+                        move.setToCastleMove();
                         tiles.get(destinationTileCoordinate-2).setNullPieceOnTile();
-                        moveInfo.castlingRookSourceCoordinate = destinationTileCoordinate-2;
+                        move.setCastlingRookSourceCoordinate(destinationTileCoordinate-2);
                         tiles.get(destinationTileCoordinate+1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate+1));
-                        moveInfo.castlingRookDestinationCoordinate = destinationTileCoordinate+1;
+                        move.setCastlingRookDestinationCoordinate(destinationTileCoordinate+1);
                         tiles.get(destinationTileCoordinate+1).getPieceOnTile().setToNotFirstMove();
                     }
                 }
                 if(sourceTilePiece.isPawn()){
                     if(sourceTileCoordinate+7*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate || sourceTileCoordinate+9*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate){
-                        int capturedPawnCoordinate = destinationTileCoordinate-8*currentPlayer.getAlliance().getDirection();
+                        int capturedPawnCoordinate = destinationTileCoordinate-BoardUtils.NUM_TILES_PER_ROW*currentPlayer.getAlliance().getDirection();
                         tiles.get(capturedPawnCoordinate).setNullPieceOnTile();
-                        moveInfo.setToEnPassantMove();
-                        moveInfo.enPassantMoveCoordinate = capturedPawnCoordinate;
+                        move.setToEnPassantMove();
+                        move.setEnPassantMoveCoordinate(capturedPawnCoordinate);
                     }
                 }
                 updateFiftyMoveCounter(move);
@@ -127,7 +129,7 @@ public class Board {
             }
 
         }
-        return moveInfo;
+
     }
     private void switchPlayer(){
         if(currentPlayer == whitePlayer){
@@ -149,7 +151,6 @@ public class Board {
             ATTACKED_TILES[move.getDestinationTileCoordinate()] = true;
         }
     }
-
     public static Pawn getEnPassantPawn(){return enPassantPawn;}
     private Player getOpponentPlayer(){return currentPlayer == whitePlayer ? blackPlayer : whitePlayer;}
     public boolean isGameIsOn(){return gameIsOn;}
@@ -175,13 +176,11 @@ public class Board {
             offerDrawToBothPlayers();
         }
     }
-
     public void offerDrawToBothPlayers(){
         System.out.println("Game has ended in a draw");
         gameIsOn = false;
         gameOver("Draw");
     }
-
     private void updateFiftyMoveCounter(final Move move) {
         if(tiles.get(move.getSourceTileCoordinate()).tileIsOccupied()) {
             if (!tiles.get(move.getSourceTileCoordinate()).getPieceOnTile().isPawn()) {
@@ -198,7 +197,6 @@ public class Board {
             gameOver("Draw");
         }
     }
-
     private void gameOver(final String conclusion){
         if(Objects.equals(conclusion, "Draw")){
             gameIsOn = false;

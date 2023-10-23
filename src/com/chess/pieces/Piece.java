@@ -26,7 +26,7 @@ public abstract class Piece {
         this.pieceType = pieceType;
         this.alliance = alliance;
         this.piecePosition = piecePosition;
-        pieceId = this.alliance.alliancePiecesId() + this.pieceType.rawPieceId();
+        pieceId = alliance.alliancePiecesId() + pieceType.rawPieceId();
         isFirstMove = true;
     }
 
@@ -43,7 +43,7 @@ public abstract class Piece {
     public boolean isKing(){return false;}
     public boolean isNull(){return this.pieceId == PieceUtils.NONE;}
     public void setToNotFirstMove(){isFirstMove = false;}
-    public PieceType getPieceType(){return this.pieceType;}
+    public PieceType getPieceType(){return pieceType;}
     public void setPiecePosition(final int piecePosition){this.piecePosition = piecePosition;}
     public ImageIcon getIcon(){
         Image scaledImage;
@@ -106,7 +106,7 @@ public abstract class Piece {
 
         @Override
         public String toString() {
-            return this.pieceName;
+            return pieceName;
         }
 
         public static PieceType getPieceTypeFromFenChar(final char c) {

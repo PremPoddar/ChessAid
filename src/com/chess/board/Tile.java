@@ -15,33 +15,27 @@ public class Tile {
         this.pieceOnTile = pieceOnTile;
         this.pieceIdOnTile = pieceIdOnTile;
     }
-
     public int getTileCoordinate() {
         return tileCoordinate;
     }
-
     public Piece getPieceOnTile() {
         return pieceOnTile;
     }
-
     public void setPieceOnTile(final Piece pieceOnTile) {
         this.pieceOnTile = pieceOnTile;
-        this.pieceIdOnTile = pieceOnTile.getPieceId();
+        pieceIdOnTile = pieceOnTile.getPieceId();
     }
     public void setNullPieceOnTile(){
-        this.pieceOnTile = null;
-        this.pieceIdOnTile = PieceUtils.NONE;
+        pieceOnTile = null;
+        pieceIdOnTile = PieceUtils.NONE;
     }
-
     public boolean tileIsOccupied(){
         return pieceIdOnTile!=0;
     }
-
     @Override
     public String toString(){
         return pieceIdOnTile!=0 ? pieceOnTile.toString() : " ";
     }
-
     @Override
     public int hashCode(){
         int hashCode = 17;

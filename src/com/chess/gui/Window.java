@@ -36,12 +36,11 @@ public class Window extends JFrame {
         panel.add(southPanel, BorderLayout.SOUTH);
 
         LoadFenWindow loadFenWindow = new LoadFenWindow(positionInFen);
-
         loadFenWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 chessBoardPanel.updateBoard(positionInFen.toString());
-                if (chessBoardPanel.board.getCurrentPlayer().getAlliance() == Alliance.WHITE) {
+                if (chessBoardPanel.getCurrentPlayerAlliance() == Alliance.WHITE) {
                     allianceLabel.setText("White");
                 }else {
                     allianceLabel.setText("Black");
@@ -61,7 +60,7 @@ public class Window extends JFrame {
         moveButton.addActionListener(e -> {
             final Move move = new Move(BoardUtils.getCoordinateAtPosition(moveTextField.getText().substring(0, 2)), BoardUtils.getCoordinateAtPosition(moveTextField.getText().substring(2, 4)));
             chessBoardPanel.makeMove(move);
-            allianceLabel.setText(chessBoardPanel.board.getCurrentPlayer().getAlliance().toString());
+            allianceLabel.setText(chessBoardPanel.getCurrentPlayerAlliance().toString());
             moveTextField.setText("");
 
         });

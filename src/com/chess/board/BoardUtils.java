@@ -27,7 +27,7 @@ public class BoardUtils {
     private static final String[] CHESS_NOTATION = initializeCHESSNotation();
     private static final Map<String, Integer> POSITION_TO_COORDINATE = initializePosotionToCoordinateMap();
     private static boolean[] initializeRow(int rowNumber) {
-        rowNumber = (8 - rowNumber) * 8;
+        rowNumber = (NUM_TILES_PER_ROW - rowNumber) * NUM_TILES_PER_ROW;
         final boolean[] row = new boolean[NUM_TILES];
 
         do {
@@ -60,7 +60,6 @@ public class BoardUtils {
                 "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
         };
     }
-
     private static Map<String, Integer> initializePosotionToCoordinateMap() {
         final Map<String, Integer> positionCoordinate = new HashMap<>();
         for(int i = 0; i < NUM_TILES; i++){
@@ -70,7 +69,7 @@ public class BoardUtils {
     }
     public static List<Tile> loadFromFen(final String fen) {
         List<Tile> tiles = new ArrayList<>();
-        for(int i = 0; i < 64; i++){
+        for(int i = 0; i < NUM_TILES; i++){
             final Tile tile = new Tile(i, null, PieceUtils.NONE);
             tiles.add(tile);
         }
@@ -183,7 +182,7 @@ public class BoardUtils {
         }
         return tiles;
     }
-    public static String generateFenFromTiles(List<Tile> tiles) {
+    public static String generateFenFromTiles(final List<Tile> tiles) {
         StringBuilder fenBuilder = new StringBuilder();
         int emptySquareCount = 0;
 
@@ -214,21 +213,16 @@ public class BoardUtils {
         fenBuilder.append(" w KQkq - 0 1");
         return fenBuilder.toString();
     }
-
-    public static boolean isValidTileCoordinate(final int coordinate) {
-        return coordinate >= 0 && coordinate < 64;
-    }
+    public static boolean isValidTileCoordinate(final int coordinate) {return coordinate >= 0 && coordinate < NUM_TILES;}
     public static int getCoordinateAtPosition(final String position){
         return POSITION_TO_COORDINATE.get(position);
     }
-    public static String getPositionAtCoordinate(int coordinate) {
+    public static String getPositionAtCoordinate(final int coordinate) {
         return CHESS_NOTATION[coordinate];
     }
-
     public static int getNumberOfMoves(final String[] fenData){
         return Integer.parseInt(fenData[fenData.length-1])-1;
     }
-
     public static int getNumberOfPlies(final String[] fenData){
         int numberOfMoves = getNumberOfMoves(fenData);
 
@@ -240,8 +234,52 @@ public class BoardUtils {
 
         return numberOfPlies;
     }
-
     public static boolean isValidFen(final String fen){
+        String errorMessage = "";
+        if(!(fen.contains("k") && fen.contains("K"))){//Checking if both the white and the black king are there
+            errorMessage="The position is missing either a White or a Black king.";
+            System.out.println(errorMessage);
+            return false;
+        }
+        if(fen.split(" ")[0].split("k").length > 2){
+            for(String s : fen.split("k")){
+                System.out.println(s);
+            }
+            errorMessage = "A position cannot have more than 1 Black king.";
+            System.out.println(errorMessage);
+            return false;
+        }
+        if(fen.split(" ")[0].split("K").length > 2){
+            errorMessage = "A position cannot have more than 1 White king.";
+            System.out.println(errorMessage);
+            return false;
+        }
+        if(fen.split("-").length > 2){
+            errorMessage = "Has more than 1 '-'.";
+            System.out.println(errorMessage);
+            return false;
+        }
+        if(!(fen.split(" ")[3].equals("-"))){
+            errorMessage = "'-' should come after the castling information.";
+            System.out.println(errorMessage);
+            return false;
+        }
+        if(fen.split(" ").length < 6){
+            errorMessage = "Insufficient amount of spaces.";
+            System.out.println(errorMessage);
+            return false;
+        }
+        if(!(fen.split(" ")[1].equals("w") || fen.split(" ")[1].equals("b"))){
+            System.out.println(fen.split(" ")[1]);
+            errorMessage = "Invalid player type. Can only accept 'w' or 'b'";
+            System.out.println(errorMessage);
+            return false;
+        }
+        if(!(fen.split("/").length == 8)){
+            errorMessage = "Incorrect fen: check for '/'.";
+            System.out.println(errorMessage);
+            return false;
+        }
         return true;
     }
 
