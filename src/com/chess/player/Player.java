@@ -12,28 +12,48 @@ import java.util.List;
 
 public class Player {
     private Alliance alliance;
-    boolean kingIsCastled;
+    private boolean kingIsCastled;
+    private boolean isInCheck;
     public Player(final Alliance alliance) {
         this.alliance = alliance;
         kingIsCastled = false;
+        isInCheck = false;
     }
 
     public Alliance getAlliance() {
         return alliance;
     }
     public void setAlliance(final Alliance alliance){this.alliance = alliance;}
+
     public Collection<Move>getAllLegalMoves(final List<Tile> board){
         Piece pieceOnTile;
         Collection<Move> legalMoves = new ArrayList<>();
         for(Tile tile : board){
-            if(tile.getPieceOnTile() != null){
-                pieceOnTile = tile.getPieceOnTile();
-                if(pieceOnTile.getAlliance() == alliance) {
-                    legalMoves.addAll(pieceOnTile.calculateLegalMoves(board));
-                }
+            if(tile.getPieceOnTile() == null){
+               continue;
+            }
+            pieceOnTile = tile.getPieceOnTile();
+            if(pieceOnTile.getAlliance() == alliance) {
+                legalMoves.addAll(pieceOnTile.calculateLegalMoves(board));
             }
         }
         return legalMoves;
+    }
+
+    public boolean isKingIsCastled() {
+        return kingIsCastled;
+    }
+
+    public void setKingIsCastled(final boolean kingIsCastled) {
+        this.kingIsCastled = kingIsCastled;
+    }
+
+    public boolean isInCheck() {
+        return isInCheck;
+    }
+
+    public void setInCheck(final boolean inCheck) {
+        isInCheck = inCheck;
     }
 
     @Override

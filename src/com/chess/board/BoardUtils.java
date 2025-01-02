@@ -3,6 +3,7 @@
 package com.chess.board;
 
 import com.chess.Alliance;
+import com.chess.moves.Move;
 import com.chess.pieces.*;
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class BoardUtils {
     public static final boolean[] FIRST_RANK = initializeRow(1);
 
     private static final String[] CHESS_NOTATION = initializeCHESSNotation();
-    private static final Map<String, Integer> POSITION_TO_COORDINATE = initializePosotionToCoordinateMap();
+    private static final Map<String, Integer> POSITION_TO_COORDINATE = initializePositionToCoordinateMap();
     private static boolean[] initializeRow(int rowNumber) {
         rowNumber = (NUM_TILES_PER_ROW - rowNumber) * NUM_TILES_PER_ROW;
         final boolean[] row = new boolean[NUM_TILES];
@@ -50,17 +51,17 @@ public class BoardUtils {
     }
     private static String[] initializeCHESSNotation() {
         return new String[]{
-                "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
-                "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
-                "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
-                "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-                "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
-                "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+                "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
                 "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
-                "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
+                "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+                "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+                "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+                "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+                "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+                "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
         };
     }
-    private static Map<String, Integer> initializePosotionToCoordinateMap() {
+    private static Map<String, Integer> initializePositionToCoordinateMap() {
         final Map<String, Integer> positionCoordinate = new HashMap<>();
         for(int i = 0; i < NUM_TILES; i++){
             positionCoordinate.put(CHESS_NOTATION[i], i);
@@ -76,107 +77,81 @@ public class BoardUtils {
         final String[] fenData = fen.split(" ");
         final String positionData = fenData[0];
 
-        int piecePosition = 56;
-        int rankNumber = 0;
+        int piecePosition = 0;
         for (char c : positionData.toCharArray()){
-
-            if(rankNumber == 8){
-                rankNumber = 0;
-                piecePosition--;
-            }
             switch (c) {
                 case 'P' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Pawn(Alliance.WHITE, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'p' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Pawn(Alliance.BLACK, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'N' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Knight(Alliance.WHITE, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'n' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Knight(Alliance.BLACK, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'B' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Bishop(Alliance.WHITE, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'b' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Bishop(Alliance.BLACK, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'R' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Rook(Alliance.WHITE, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'r' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Rook(Alliance.BLACK, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'Q' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Queen(Alliance.WHITE, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'q' -> {
                     tiles.get(piecePosition).setPieceOnTile(new Queen(Alliance.BLACK, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'K' -> {
                     tiles.get(piecePosition).setPieceOnTile(new King(Alliance.WHITE, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
                 case 'k' -> {
                     tiles.get(piecePosition).setPieceOnTile(new King(Alliance.BLACK, piecePosition));
                     piecePosition += 1;
-                    rankNumber++;
                 }
-                case '/' -> piecePosition -= 15;
+                case '/' -> piecePosition += 0;
                 case '8' -> {
                     piecePosition += 8;
-                    rankNumber += 8;
                 }
                 case '7' -> {
                     piecePosition += 7;
-                    rankNumber += 7;
                 }
                 case '6' -> {
                     piecePosition += 6;
-                    rankNumber += 6;
                 }
                 case '5' -> {
                     piecePosition += 5;
-                    rankNumber += 5;
                 }
                 case '4' -> {
                     piecePosition += 4;
-                    rankNumber += 4;
                 }
                 case '3' -> {
                     piecePosition += 3;
-                    rankNumber += 3;
                 }
                 case '2' -> {
                     piecePosition += 2;
-                    rankNumber += 2;
                 }
                 case '1' -> {
                     piecePosition += 1;
-                    rankNumber += 1;
                 }
             }
         }
@@ -188,7 +163,7 @@ public class BoardUtils {
 
         for (int i = 63; i >= 0; i--) {
             Tile tile = tiles.get(i);
-            if (tile.tileIsOccupied()) {
+            if (tile.isOccupied()) {
                 if (emptySquareCount > 0) {
                     fenBuilder.append(emptySquareCount);
                     emptySquareCount = 0;
@@ -281,6 +256,15 @@ public class BoardUtils {
             return false;
         }
         return true;
+    }
+
+    public static boolean[] calculateAttackedSquares(final Collection<Move> opponentLegalMoves){
+        boolean[] attackedTiles = new boolean[NUM_TILES];
+        Arrays.fill(attackedTiles, false);
+        for(Move move : opponentLegalMoves){
+            attackedTiles[move.getDestinationTileCoordinate()] = true;
+        }
+        return attackedTiles;
     }
 
 }

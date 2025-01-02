@@ -29,7 +29,7 @@ public class Tile {
         pieceOnTile = null;
         pieceIdOnTile = PieceUtils.NONE;
     }
-    public boolean tileIsOccupied(){
+    public boolean isOccupied(){
         return pieceIdOnTile!=0;
     }
     @Override

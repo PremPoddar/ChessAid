@@ -35,27 +35,28 @@ public class King extends Piece{
                 continue;
             }
 
-            if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
-                final Tile candidateDestinationTile = board.get(candidateDestinationCoordinate);
+            if (!BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
+                continue;
+            }
+            final Tile candidateDestinationTile = board.get(candidateDestinationCoordinate);
 
-                if (!candidateDestinationTile.tileIsOccupied()) {
+            if (!candidateDestinationTile.isOccupied()) {
+                legalMoves.add(new Move(piecePosition, candidateDestinationCoordinate));
+            } else {
+                final Piece pieceAtDestination = candidateDestinationTile.getPieceOnTile();
+                final Alliance pieceAlliance = pieceAtDestination.getAlliance();
+
+                if (this.getAlliance() != pieceAlliance) {
                     legalMoves.add(new Move(piecePosition, candidateDestinationCoordinate));
-                } else {
-                    final Piece pieceAtDestination = candidateDestinationTile.getPieceOnTile();
-                    final Alliance pieceAlliance = pieceAtDestination.getAlliance();
-
-                    if (this.getAlliance() != pieceAlliance) {
-                        legalMoves.add(new Move(piecePosition, candidateDestinationCoordinate));
-                    }
                 }
             }
         }
         if(isFirstMove) {
-            if (!board.get(piecePosition + 1).tileIsOccupied() && !board.get(piecePosition+2).tileIsOccupied()) {
+            if (!board.get(piecePosition + 1).isOccupied() && !board.get(piecePosition+2).isOccupied()) {
                 if(!Board.ATTACKED_TILES[piecePosition+1] && !Board.ATTACKED_TILES[piecePosition+2]){
                     legalMoves.add(new Move(piecePosition, piecePosition + 2));
                 }
-            } else if (!board.get(piecePosition - 1).tileIsOccupied() && !board.get(piecePosition-2).tileIsOccupied() && !board.get(piecePosition-3).tileIsOccupied()) {
+            } else if (!board.get(piecePosition - 1).isOccupied() && !board.get(piecePosition-2).isOccupied() && !board.get(piecePosition-3).isOccupied()) {
                 if(!Board.ATTACKED_TILES[piecePosition-1] && !Board.ATTACKED_TILES[piecePosition-2]){
                     legalMoves.add(new Move(piecePosition, piecePosition - 2));
                 }

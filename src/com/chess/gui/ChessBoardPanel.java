@@ -40,7 +40,7 @@ public class ChessBoardPanel extends JPanel {
         }
     }
     private void initializeTiles(){
-        for(int i = tiles.length-1; i >= 0; i--){
+        for(int i = 0; i < tiles.length; i++){
             tiles[i] = new TileButton(AppManager.icons[i]);
             tiles[i].setBorder(new EmptyBorder(0,0,0,0));
             tiles[i].setMargin(new Insets(0, 0, 0, 0));
@@ -55,14 +55,14 @@ public class ChessBoardPanel extends JPanel {
                 }
             });
         }
-        for (int i = 0; i < tiles.length; i++) {
-            this.add(tiles[i+(56-(i/BoardUtils.NUM_TILES_PER_ROW)*16)]);
+        for (TileButton tile : tiles) {
+            this.add(tile);
         }
     }
     public void updateBoard(final String fen){
         board = new Board(fen);
         for(int i = 0; i < BoardUtils.NUM_TILES; i++){
-            if(board.tiles.get(i).tileIsOccupied()){
+            if(board.tiles.get(i).isOccupied()){
                 ImageIcon overlayIcon = board.tiles.get(i).getPieceOnTile().getIcon();
                 tiles[i].setOverlayIcon(overlayIcon);
             }

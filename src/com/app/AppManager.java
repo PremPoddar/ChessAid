@@ -49,4 +49,26 @@ public class AppManager {
             }
         }
     }
+//    static {
+//        int tileWidth = ChessBoardPanel.TILE_DIMENSION.width;
+//        int tileHeight = ChessBoardPanel.TILE_DIMENSION.height;
+//
+//        for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
+//            // Convert linear index to chess board coordinates
+//            int row = i / BoardUtils.NUM_TILES_PER_ROW;  // 0-7
+//            int col = i % BoardUtils.NUM_TILES_PER_ROW;  // 0-7
+//
+//            // Calculate x and y coordinates in the image
+//            int x = col * tileWidth;
+//            int y = row * tileHeight;
+//
+//            BufferedImage subImage = boardImage.getSubimage(x, y, tileWidth, tileHeight);
+//            Image scaledImage = subImage.getScaledInstance(
+//                    (int)(tileWidth * ChessBoardPanel.SCALING_FACTOR),
+//                    (int)(tileHeight * ChessBoardPanel.SCALING_FACTOR),
+//                    Image.SCALE_SMOOTH
+//            );
+//            icons[i] = new ImageIcon(scaledImage);
+//        }
+//    }
 }

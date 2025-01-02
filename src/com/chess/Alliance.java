@@ -5,6 +5,8 @@ package com.chess;
 import com.chess.board.BoardUtils;
 import com.chess.pieces.PieceUtils;
 
+import java.util.Objects;
+
 public enum Alliance {
     WHITE{
         @Override
@@ -19,7 +21,7 @@ public enum Alliance {
 
         @Override
         public int getDirection() {
-            return 1;
+            return -1;
         }
 
         @Override
@@ -56,7 +58,7 @@ public enum Alliance {
 
         @Override
         public int getDirection() {
-            return -1;
+            return 1;
         }
 
         @Override
@@ -78,6 +80,7 @@ public enum Alliance {
         public String toString(){
             return "Black";
         }
+
     };
 
     public abstract boolean isWhite();
@@ -87,4 +90,5 @@ public enum Alliance {
     public abstract int alliancePiecesId();
     public abstract boolean isPawnPromotionSquare(final int position);
     public abstract String allianceLetter();
+
 }

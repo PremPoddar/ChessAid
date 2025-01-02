@@ -34,20 +34,21 @@ public class Queen extends Piece{
 
                 candidateDestinationCoordinate += candidateCoordinateOffset;
 
-                if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
-                    final Tile candidateDestinationTile = board.get(candidateDestinationCoordinate);
+                if (!BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
+                    continue;
+                }
+                final Tile candidateDestinationTile = board.get(candidateDestinationCoordinate);
 
-                    if (!candidateDestinationTile.tileIsOccupied()) {
+                if (!candidateDestinationTile.isOccupied()) {
+                    legalMoves.add(new Move(piecePosition, candidateDestinationCoordinate));
+                } else {
+                    final Piece pieceAtDestination = candidateDestinationTile.getPieceOnTile();
+                    final Alliance pieceAllianceOfDestination = pieceAtDestination.getAlliance();
+
+                    if (this.getAlliance() != pieceAllianceOfDestination) {
                         legalMoves.add(new Move(piecePosition, candidateDestinationCoordinate));
-                    } else {
-                        final Piece pieceAtDestination = candidateDestinationTile.getPieceOnTile();
-                        final Alliance pieceAllianceOfDestination = pieceAtDestination.getAlliance();
-
-                        if (this.getAlliance() != pieceAllianceOfDestination) {
-                            legalMoves.add(new Move(piecePosition, candidateDestinationCoordinate));
-                        }
-                        break;
                     }
+                    break;
                 }
             }
         }

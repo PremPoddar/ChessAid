@@ -4,6 +4,8 @@ package com.chess.pieces;
 
 import com.app.AppManager;
 import com.chess.Alliance;
+import com.chess.board.Board;
+import com.chess.board.BoardUtils;
 import com.chess.board.Tile;
 import com.chess.moves.Move;
 
@@ -57,7 +59,6 @@ public abstract class Piece {
         return new ImageIcon(scaledImage);
     }
     public abstract String toString();
-
     public enum PieceType {
         PAWN("P") {
             @Override

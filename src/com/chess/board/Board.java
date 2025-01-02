@@ -75,61 +75,119 @@ public class Board {
     public void makeMove(final Move move){
         Collection<Move> legalMoves = currentPlayer.getAllLegalMoves(tiles);
 
-        if(legalMoves.contains(move)){
-            move.setToValidMove();
-            tiles.get(move.getSourceTileCoordinate()).getPieceOnTile().setToNotFirstMove();
-            final Tile sourceTile = tiles.get(move.getSourceTileCoordinate());
-            final Piece sourceTilePiece = sourceTile.getPieceOnTile();
-            final Tile destinationTile = tiles.get(move.getDestinationTileCoordinate());
-            final boolean destinationPieceIsNull = destinationTile.getPieceOnTile() == null;
-            if (destinationPieceIsNull || (destinationTile.getPieceOnTile().getAlliance() != null && currentPlayer.getAlliance() != destinationTile.getPieceOnTile().getAlliance())) {//Checking if the source tile and destination tile have different alliances
-                final boolean enPassantPawnIsNull = enPassantPawn == null;
-                if(!enPassantPawnIsNull && enPassantPawn.getAlliance() == currentPlayer.getAlliance()){
-                    enPassantPawn = null;
-                }
-                if(sourceTilePiece.isPawn() && move.isEnPassantPawn()){
-                    enPassantPawn = (Pawn) sourceTilePiece;
-                }
-                final int sourceTileCoordinate = sourceTile.getTileCoordinate();
-                final int destinationTileCoordinate = destinationTile.getTileCoordinate();
-                tiles.get(sourceTileCoordinate).setNullPieceOnTile();
-                sourceTilePiece.setPiecePosition(destinationTileCoordinate);
-                tiles.get(destinationTileCoordinate).setPieceOnTile(sourceTilePiece);
-                tiles.get(destinationTileCoordinate).getPieceOnTile().setToNotFirstMove();
-                if(sourceTilePiece.isKing()){
-                    if(move.getSourceTileCoordinate()+2 == move.getDestinationTileCoordinate()){
-                        move.setToCastleMove();
-                        tiles.get(destinationTileCoordinate+1).setNullPieceOnTile();
-                        move.setCastlingRookSourceCoordinate(destinationTileCoordinate+1);
-                        tiles.get(destinationTileCoordinate-1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate-1));
-                        move.setCastlingRookDestinationCoordinate(destinationTileCoordinate-1);
-                        tiles.get(destinationTileCoordinate-1).getPieceOnTile().setToNotFirstMove();
-                    }else if(move.getSourceTileCoordinate()-2 == move.getDestinationTileCoordinate()){
-                        move.setToCastleMove();
-                        tiles.get(destinationTileCoordinate-2).setNullPieceOnTile();
-                        move.setCastlingRookSourceCoordinate(destinationTileCoordinate-2);
-                        tiles.get(destinationTileCoordinate+1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate+1));
-                        move.setCastlingRookDestinationCoordinate(destinationTileCoordinate+1);
-                        tiles.get(destinationTileCoordinate+1).getPieceOnTile().setToNotFirstMove();
-                    }
-                }
-                if(sourceTilePiece.isPawn()){
-                    if(sourceTileCoordinate+7*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate || sourceTileCoordinate+9*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate){
-                        int capturedPawnCoordinate = destinationTileCoordinate-BoardUtils.NUM_TILES_PER_ROW*currentPlayer.getAlliance().getDirection();
-                        tiles.get(capturedPawnCoordinate).setNullPieceOnTile();
-                        move.setToEnPassantMove();
-                        move.setEnPassantMoveCoordinate(capturedPawnCoordinate);
-                    }
-                }
-                updateFiftyMoveCounter(move);
-                positionHashes.add(calculateBoardHash());
-                checkForThreeFoldRepetition();
-                switchPlayer();
-                calculateAttackedSquares();
-            }
-
+        if(!legalMoves.contains(move)){
+            return;
+        }
+        if (!isValidDestinationTile(move)){
+            return;
+        }
+        if(willBeInCheckAfterMove(move)){
+            return;
         }
 
+        final Tile sourceTile = tiles.get(move.getSourceTileCoordinate());
+        final Piece sourceTilePiece = sourceTile.getPieceOnTile();
+        final Tile destinationTile = tiles.get(move.getDestinationTileCoordinate());
+
+
+        move.setToValidMove();
+        updateEnPassantPawn(move);
+        final int sourceTileCoordinate = sourceTile.getTileCoordinate();
+        final int destinationTileCoordinate = destinationTile.getTileCoordinate();
+
+        tiles.get(sourceTileCoordinate).setNullPieceOnTile();
+        sourceTilePiece.setPiecePosition(destinationTileCoordinate);
+        tiles.get(destinationTileCoordinate).setPieceOnTile(sourceTilePiece);
+        tiles.get(destinationTileCoordinate).getPieceOnTile().setToNotFirstMove();
+        if(sourceTilePiece.isKing()){
+            if(move.getSourceTileCoordinate()+2 == move.getDestinationTileCoordinate()){
+                move.setToCastleMove();
+                tiles.get(destinationTileCoordinate+1).setNullPieceOnTile();
+                move.setCastlingRookSourceCoordinate(destinationTileCoordinate+1);
+                tiles.get(destinationTileCoordinate-1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate-1));
+                move.setCastlingRookDestinationCoordinate(destinationTileCoordinate-1);
+                tiles.get(destinationTileCoordinate-1).getPieceOnTile().setToNotFirstMove();
+            }else if(move.getSourceTileCoordinate()-2 == move.getDestinationTileCoordinate()){
+                move.setToCastleMove();
+                tiles.get(destinationTileCoordinate-2).setNullPieceOnTile();
+                move.setCastlingRookSourceCoordinate(destinationTileCoordinate-2);
+                tiles.get(destinationTileCoordinate+1).setPieceOnTile(new Rook(currentPlayer.getAlliance(), destinationTileCoordinate+1));
+                move.setCastlingRookDestinationCoordinate(destinationTileCoordinate+1);
+                tiles.get(destinationTileCoordinate+1).getPieceOnTile().setToNotFirstMove();
+            }
+        }
+        if(sourceTilePiece.isPawn()){
+            if(sourceTileCoordinate+7*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate || sourceTileCoordinate+9*currentPlayer.getAlliance().getDirection() == destinationTileCoordinate){
+                int capturedPawnCoordinate = destinationTileCoordinate-BoardUtils.NUM_TILES_PER_ROW*currentPlayer.getAlliance().getDirection();
+                tiles.get(capturedPawnCoordinate).setNullPieceOnTile();
+                move.setToEnPassantMove();
+                move.setEnPassantMoveCoordinate(capturedPawnCoordinate);
+            }
+        }
+        updateFiftyMoveCounter(move);
+        positionHashes.add(calculateBoardHash());
+        checkForThreeFoldRepetition();
+        switchPlayer();
+        calculateAttackedSquares(); //boolean ATTACKED_TILES[64]
+        updateIfInCheck();
+    }
+    private boolean willBeInCheckAfterMove(final Move move){
+            Board possiblyKingInCheckBoard = new Board(BoardUtils.generateFenFromTiles(tiles));
+            Piece sourcePiece;
+
+            sourcePiece = tiles.get(move.getSourceTileCoordinate()).getPieceOnTile();
+            sourcePiece.setPiecePosition(move.getDestinationTileCoordinate());
+       // System.out.println("Source: "+(move.getSourceTileCoordinate()+1));
+
+        possiblyKingInCheckBoard.tiles.get(move.getDestinationTileCoordinate()).setPieceOnTile(sourcePiece);
+            possiblyKingInCheckBoard.tiles.get(move.getSourceTileCoordinate()).setNullPieceOnTile();
+
+            //possiblyKingInCheckBoard.switchPlayer();
+            boolean[] attackedTiles = BoardUtils.calculateAttackedSquares(possiblyKingInCheckBoard.getOpponentPlayer().getAllLegalMoves(possiblyKingInCheckBoard.tiles));
+
+            for (Tile tile : possiblyKingInCheckBoard.tiles) {
+                if (tile.isOccupied()) {
+                    if (tile.getPieceOnTile().isKing() && tile.getPieceOnTile().getAlliance() == currentPlayer.getAlliance() && attackedTiles[tile.getTileCoordinate()]) {
+                        System.out.println("Player will be in check");
+                        return true;
+                    }
+                }
+            }
+            for(Tile tile: possiblyKingInCheckBoard.tiles){
+                String a = "";
+                a = attackedTiles[tile.getTileCoordinate()] ? " is attacked." : " isn't attacked.";
+                System.out.println("Tile: "+BoardUtils.getPositionAtCoordinate(tile.getTileCoordinate())+a);
+            }
+        System.out.println("---------------");
+
+            return false;
+    }
+    private boolean isValidDestinationTile(final Move move){
+        final Tile destinationTile = tiles.get(move.getDestinationTileCoordinate());
+        final boolean destinationPieceIsNull = destinationTile.getPieceOnTile() == null;
+        return destinationPieceIsNull || (destinationTile.getPieceOnTile().getAlliance() != null && currentPlayer.getAlliance() != destinationTile.getPieceOnTile().getAlliance());
+    }
+
+    private void updateEnPassantPawn(final Move move){
+        final boolean enPassantPawnIsNull = enPassantPawn == null;
+        final Tile sourceTile = tiles.get(move.getSourceTileCoordinate());
+        if(!enPassantPawnIsNull && enPassantPawn.getAlliance() == currentPlayer.getAlliance()){
+            enPassantPawn = null;
+        }
+        if(sourceTile.getPieceOnTile().isPawn() && move.isEnPassantPawn()){
+            enPassantPawn = (Pawn) sourceTile.getPieceOnTile();
+        }
+    }
+    private void updateIfInCheck(){
+        currentPlayer.setInCheck(false);
+        for(Tile tile : tiles){
+            if(tile.isOccupied()){
+                if(tile.getPieceOnTile().isKing() && tile.getPieceOnTile().getAlliance() == currentPlayer.getAlliance() && ATTACKED_TILES[tile.getTileCoordinate()]){
+                    currentPlayer.setInCheck(true);
+                    break;
+                }
+            }
+        }
     }
     private void switchPlayer(){
         if(currentPlayer == whitePlayer){
@@ -140,8 +198,7 @@ public class Board {
             numberOfMoves++;
             currentPlayer = whitePlayer;
         }else{
-            System.out.println("Either there are more than 2 players(white and black) or there is a null player.");
-            System.out.println("Board.java: switchPlayer()");
+            //TODO: Handle what happens when there are more than two players or one null player
         }
     }
     private void calculateAttackedSquares(){
@@ -182,7 +239,7 @@ public class Board {
         gameOver("Draw");
     }
     private void updateFiftyMoveCounter(final Move move) {
-        if(tiles.get(move.getSourceTileCoordinate()).tileIsOccupied()) {
+        if(tiles.get(move.getSourceTileCoordinate()).isOccupied()) {
             if (!tiles.get(move.getSourceTileCoordinate()).getPieceOnTile().isPawn()) {
                 if (tiles.get(move.getDestinationTileCoordinate()).getPieceOnTile().isNull()) {
                     fiftyMoveCounter++;
@@ -201,11 +258,12 @@ public class Board {
         if(Objects.equals(conclusion, "Draw")){
             gameIsOn = false;
             System.exit(0);
+            //TODO: Handle game draw
         }
     }
     private void printCurrentPlayersLegalMove(){
         for (Tile tile : tiles) {
-            if (tile.tileIsOccupied()) {
+            if (tile.isOccupied()) {
                 if (tile.getPieceOnTile().getAlliance() == currentPlayer.getAlliance()) {
                     Piece pieceOnTile = tile.getPieceOnTile();
                     System.out.println(currentPlayer.getAlliance() + " " + pieceOnTile + " on " + BoardUtils.getPositionAtCoordinate(pieceOnTile.getPiecePosition()) + ": ");
