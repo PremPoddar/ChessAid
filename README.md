@@ -12,3 +12,14 @@ Needs a JDK (8 or newer) on your path.
 javac -d out $(find src -name "*.java")
 java -cp out com.chess.ChessAid
 ```
+
+## Project layout
+
+- `src/com/chess` — the game itself; `ChessAid` is the entry point
+- `src/com/chess/board` — the board and its tiles
+- `src/com/chess/pieces` — each piece and the moves it can make
+- `src/com/chess/moves` — the move types the game works with
+- `src/com/chess/player` — the two players and their legal moves
+- `src/com/chess/gui` — the window, the board panel and the FEN loader
+- `src/com/app` — app plumbing
+- `graphics/boards` — the board themes
