@@ -23,3 +23,5 @@ java -cp out com.chess.ChessAid
 - `src/com/chess/gui` — the window, the board panel and the FEN loader
 - `src/com/app` — app plumbing
 - `graphics/boards` — the board themes
+
+Board themes live in `graphics/boards`.
